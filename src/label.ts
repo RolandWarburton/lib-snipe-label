@@ -16,20 +16,29 @@ export class LabelGenerator {
     this.text = text;
   }
 
-  public async makeQRCodeLabel(
-    qrValue: string,
-  ): Promise<HTMLCanvasElement | Error> {
+  public async makeLabel(qrValue: string): Promise<HTMLCanvasElement | Error> {
     const qrString = await getQRCodeData(this.api, qrValue);
     if (typeof qrString !== "string") {
       return new Error("failed to fetch qr code string");
     }
 
-    const label = await makeQRCodeLabel(qrString, this.text);
+    const label = await makeLabel(qrString, this.text);
     if (label instanceof Error) {
       return new Error("failed to create QR");
     } else {
       return label;
     }
+  }
+
+  public async makeQR(
+    qrString: string,
+    size: number,
+  ): Promise<HTMLCanvasElement | Error> {
+    const qrStringEncoded = await getQRCodeData(this.api, qrString);
+    if (typeof qrStringEncoded !== "string") {
+      return new Error("failed to fetch qr code string");
+    }
+    return makeQR(qrStringEncoded, size);
   }
 }
 
@@ -74,8 +83,24 @@ function makeLabelCanvas(
   }
 }
 
+async function makeQR(
+  qrString: string,
+  width: number,
+): Promise<HTMLCanvasElement> {
+  // generate QR code canvas feature
+  const qrCanvas = await QRCode.toCanvas(`myapp://${qrString}`, {
+    width: width,
+    margin: 2,
+    color: {
+      dark: "#000000",
+      light: "#ffffff",
+    },
+  });
+  return qrCanvas;
+}
+
 // constructs final label
-async function makeQRCodeLabel(
+async function makeLabel(
   qrString: string,
   text: string[],
 ): Promise<HTMLCanvasElement | Error> {
@@ -95,15 +120,7 @@ async function makeQRCodeLabel(
   }
 
   const { canvas, ctx } = result;
-
-  // generate QR code canvas feature
-  const qrCanvas = await QRCode.toCanvas(`myapp://${qrString}`, {
-    margin: 2,
-    color: {
-      dark: "#000000",
-      light: "#ffffff",
-    },
-  });
+  const qrCanvas = await makeQR(qrString, labelHeight - 15);
 
   // Draw the QR code on the new canvas
   ctx.drawImage(qrCanvas, 0, 0);
