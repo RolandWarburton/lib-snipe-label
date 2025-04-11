@@ -182,7 +182,7 @@ async function makeLabel(
   ctx.textAlign = "left";
 
   const minOffset = 50;
-  let offset = 0
+  let offset = 0;
   for (let i = 0; i < text.length; i++) {
     const t = text[i];
     const fontSize = autoFitTextWithLogo(
@@ -193,11 +193,11 @@ async function makeLabel(
       25,
       "Monospace",
     );
-    const nextOffset = fontSize * 2
+    const nextOffset = fontSize * 2;
     if (i === 0) {
-      offset += fontSize
+      offset += fontSize;
     } else {
-      offset += nextOffset
+      offset += nextOffset;
     }
     if (offset < minOffset) {
       offset = minOffset;
