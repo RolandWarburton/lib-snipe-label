@@ -134,11 +134,13 @@ async function makeLabel(
 
   // semi dynamic font sizing
   let fontSize = 50;
-  const biggestWord = [...text].sort((a, b) => b.length - a.length)[0];
-  if (biggestWord.length > 19) {
-    fontSize = 32;
-  } else if (biggestWord.length < 10) {
-    fontSize = 64;
+  if (text.length > 0) {
+    const biggestWord = [...text].sort((a, b) => b.length - a.length)[0];
+    if (biggestWord.length > 19) {
+      fontSize = 32;
+    } else if (biggestWord.length < 10) {
+      fontSize = 64;
+    }
   }
 
   ctx.fillStyle = "#000000";
