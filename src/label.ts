@@ -114,6 +114,33 @@ async function makeQR(
   return qrCanvas;
 }
 
+function autoFitTextWithLogo(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  labelWidth: number,
+  labelHeight: number,
+  margin: number,
+  fontFamily: string = "sans-serif",
+): number {
+  const logoSize = labelHeight; // Square logo occupies height × height
+  const maxTextWidth = labelWidth - logoSize - margin; // Remaining space
+
+  let fontSize = labelHeight * 0.8; // Start at 80% of label height (adjust as needed)
+
+  do {
+    ctx.font = `${fontSize}px ${fontFamily}`;
+    const textWidth = ctx.measureText(text).width;
+
+    // Exit if text fits or font is too small
+    if (textWidth <= maxTextWidth || fontSize <= 8) break;
+
+    // Reduce font size until text fits
+    fontSize -= 1;
+  } while (true);
+
+  return fontSize;
+}
+
 // constructs final label
 // overall label size (300dpi 36x89mm is 1050x425)
 async function makeLabel(
@@ -139,36 +166,44 @@ async function makeLabel(
   // Draw the QR code on the new canvas
   ctx.drawImage(qrCanvas, 0, 0);
 
-  // truncate long words
+  if (labelHeight > labelWidth) {
+    throw new Error("portrait sized labels are unsupported");
+  }
+
+  // Truncate long words (scaled threshold)
   text.forEach((t, i) => {
-    if (t.length > 33) {
-      text[i] = text[i].slice(0, 29) + "...";
+    const maxLength = 25; // Scale the 33 char threshold
+    if (t.length > maxLength) {
+      text[i] = text[i].slice(0, 25) + "...";
     }
   });
 
-  // semi dynamic font sizing
-  let fontSize = 50;
-  if (text.length > 0) {
-    const biggestWord = [...text].sort((a, b) => b.length - a.length)[0];
-    if (biggestWord.length > 25) {
-      fontSize = 32;
-    } else if (biggestWord.length > 19) {
-      fontSize = 40;
-    } else if (biggestWord.length < 10) {
-      fontSize = 64;
-    }
-    console.log(`fontsize is ${fontSize}`);
-    console.log(`biggest text: ${biggestWord}`);
-  }
-
   ctx.fillStyle = "#000000";
-  ctx.font = `bold ${fontSize}px Arial`;
   ctx.textAlign = "left";
 
-  let offset = 64;
-  for (const t of text) {
+  const minOffset = 50;
+  let offset = 0
+  for (let i = 0; i < text.length; i++) {
+    const t = text[i];
+    const fontSize = autoFitTextWithLogo(
+      ctx,
+      t,
+      labelWidth,
+      labelHeight,
+      25,
+      "Monospace",
+    );
+    const nextOffset = fontSize * 2
+    if (i === 0) {
+      offset += fontSize
+    } else {
+      offset += nextOffset
+    }
+    if (offset < minOffset) {
+      offset = minOffset;
+    }
+    ctx.font = `bold ${fontSize}px Monospace`;
     ctx.fillText(t, qrCanvas.width + 15, offset, canvas.width - qrCanvas.width);
-    offset += 70;
   }
 
   return canvas;
