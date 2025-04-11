@@ -136,15 +136,19 @@ async function makeLabel(
   let fontSize = 50;
   if (text.length > 0) {
     const biggestWord = [...text].sort((a, b) => b.length - a.length)[0];
-    if (biggestWord.length > 19) {
+    if (biggestWord.length > 25) {
       fontSize = 32;
+    } else if (biggestWord.length > 19) {
+      fontSize = 40;
     } else if (biggestWord.length < 10) {
       fontSize = 64;
     }
+    console.log(`fontsize is ${fontSize}`);
+    console.log(`biggest text: ${biggestWord}`);
   }
 
   ctx.fillStyle = "#000000";
-  ctx.font = `${fontSize}px Arial`;
+  ctx.font = `bold ${fontSize}px Arial`;
   ctx.textAlign = "left";
 
   let offset = 64;
