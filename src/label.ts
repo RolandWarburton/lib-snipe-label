@@ -10,10 +10,20 @@ export class LabelGenerator {
   private api: string;
   public filename: string;
   public text: string[];
-  constructor(api: string, filename: string, text: string[]) {
+  public labelWidth: number;
+  public labelHeight: number;
+  constructor(
+    api: string,
+    filename: string,
+    text: string[],
+    labelWidth: number = 1050,
+    labelHeight: number = 425,
+  ) {
     this.api = api;
     this.filename = filename;
     this.text = text;
+    this.labelWidth = labelWidth;
+    this.labelHeight = labelHeight;
   }
 
   public async makeLabel(qrValue: string): Promise<HTMLCanvasElement | Error> {
@@ -22,7 +32,12 @@ export class LabelGenerator {
       return new Error("failed to fetch qr code string");
     }
 
-    const label = await makeLabel(qrString, this.text);
+    const label = await makeLabel(
+      qrString,
+      this.text,
+      this.labelWidth,
+      this.labelHeight,
+    );
     if (label instanceof Error) {
       return new Error("failed to create QR");
     } else {
@@ -62,7 +77,7 @@ async function getQRCodeData(
 
 // makes a blank label
 function makeLabelCanvas(
-  options: canvasOptions = { background: "#ffffff", width: 100, height: 100 },
+  options: canvasOptions = { background: "#ffffff", width: 1050, height: 425 },
 ):
   | {
     canvas: HTMLCanvasElement;
@@ -100,14 +115,13 @@ async function makeQR(
 }
 
 // constructs final label
+// overall label size (300dpi 36x89mm is 1050x425)
 async function makeLabel(
   qrString: string,
   text: string[],
+  labelWidth: number,
+  labelHeight: number,
 ): Promise<HTMLCanvasElement | Error> {
-  // overall label size (300dpi 36x89mm)
-  const labelWidth = 1050;
-  const labelHeight = 425;
-
   // make blank label
   const result = makeLabelCanvas({
     background: "#ffffff",
