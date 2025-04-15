@@ -9,5 +9,5 @@
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"]
   },
-  "exports": "./src/mod.ts"
+  "exports": "./mod.ts"
 }
