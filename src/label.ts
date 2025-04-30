@@ -166,7 +166,7 @@ async function makeLabel(
   // Draw the QR code on the new canvas
   ctx.drawImage(qrCanvas, 0, 0);
 
-  if (labelHeight > labelWidth) {
+  if (Number(labelHeight) > Number(labelWidth)) {
     throw new Error("portrait sized labels are unsupported");
   }
 
