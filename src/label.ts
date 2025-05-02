@@ -6,16 +6,22 @@ interface canvasOptions {
   height: number;
 }
 
+interface IText {
+  text: string;
+  wrap: boolean;
+  fontSize?: number;
+}
+
 export class LabelGenerator {
   private api: string;
   public filename: string;
-  public text: string[];
+  public text: IText[];
   public labelWidth: number;
   public labelHeight: number;
   constructor(
     api: string,
     filename: string,
-    text: string[],
+    text: IText[],
     labelWidth: number = 1050,
     labelHeight: number = 425,
   ) {
@@ -114,13 +120,14 @@ async function makeQR(
   return qrCanvas;
 }
 
+// !! DEPRICATED
 function autoFitTextWithLogo(
   ctx: CanvasRenderingContext2D,
   text: string,
   labelWidth: number,
   labelHeight: number,
   margin: number,
-  fontFamily: string = "sans-serif",
+  fontFamily: string = "Monospace",
 ): number {
   const logoSize = labelHeight; // Square logo occupies height × height
   const maxTextWidth = labelWidth - logoSize - margin; // Remaining space
@@ -145,7 +152,7 @@ function autoFitTextWithLogo(
 // overall label size (300dpi 36x89mm is 1050x425)
 async function makeLabel(
   qrString: string,
-  text: string[],
+  text: IText[],
   labelWidth: number,
   labelHeight: number,
 ): Promise<HTMLCanvasElement | Error> {
@@ -170,41 +177,75 @@ async function makeLabel(
     throw new Error("portrait sized labels are unsupported");
   }
 
-  // Truncate long words (scaled threshold)
-  text.forEach((t, i) => {
-    const maxLength = 25; // Scale the 33 char threshold
-    if (t.length > maxLength) {
-      text[i] = text[i].slice(0, 25) + "...";
-    }
-  });
-
   ctx.fillStyle = "#000000";
   ctx.textAlign = "left";
 
-  const minOffset = 50;
-  let offset = 0;
+  // iterate over each text object to draw
+  const margin = 25;
+  let chunkSize = 99;
+  const maxFontSize = labelHeight * 0.2;
+
+  let offset = maxFontSize;
+
+  // for each text object
   for (let i = 0; i < text.length; i++) {
     const t = text[i];
-    const fontSize = autoFitTextWithLogo(
-      ctx,
-      t,
-      labelWidth,
-      labelHeight,
-      25,
-      "Monospace",
-    );
-    const nextOffset = fontSize * 2;
-    if (i === 0) {
-      offset += fontSize;
-    } else {
-      offset += nextOffset;
-    }
-    if (offset < minOffset) {
-      offset = minOffset;
-    }
-    ctx.font = `bold ${fontSize}px Monospace`;
-    ctx.fillText(t, qrCanvas.width + 15, offset, canvas.width - qrCanvas.width);
-  }
+    console.log(`processing line ${i}: ${text[i].text}`);
 
+    // set font size
+    const idealFontSize = t.fontSize || 32;
+    console.log(`setting font size to ${idealFontSize}`);
+    ctx.font = `${idealFontSize}px Monospace`;
+
+    // split the text into chunks, each chunk is a line to draw on the label
+
+    // first we need to know how many characters can be in a line
+    // we need to know the remaining text width minus the logo and any margins
+    // to figure out if this line is longer than the label (then reduce the chunk length)
+    // NOTE this really only works well when the font is mono space
+
+    // The labelHeight will be the QR code size in this case
+    // because the QR is 1:1 ratio
+    const maxTextWidth = labelWidth - labelHeight - margin;
+    let textWidth = ctx.measureText(t.text.slice(0, chunkSize)).width;
+    while (textWidth >= maxTextWidth) {
+      if (chunkSize <= 20) break; // minimum 20 char per line
+      chunkSize--;
+      textWidth = ctx.measureText(t.text.slice(0, chunkSize)).width;
+    }
+    console.log(`chunk size: ${chunkSize}`);
+
+    // now that we know our chunk size we can split our text into chunks
+    // figure out how many lines of text this will require
+    // "lorem ipsum dior sit amet" => " ["lorem ipsum", "dior sit amet"]
+    const tLines: Array<string> = [];
+    for (let j = 0; j < t.text.length; j += chunkSize) {
+      tLines.push(t.text.slice(j, j + chunkSize));
+    }
+    console.log(`there are ${tLines.length} text lines to draw`);
+
+    // prevent drawing lines outside of the label
+    const nextLineGroupHeight = offset + idealFontSize * tLines.length;
+    if (nextLineGroupHeight > labelHeight) {
+      console.log("reached height of the label");
+      break;
+    }
+
+    // draw the text
+    for (let i = 0; i < tLines.length; i++) {
+      const x = qrCanvas.width + 15;
+      const y = offset;
+      const t = tLines[i];
+      console.log(`drawing text "${t}" at x:${x} y:${y}`);
+      ctx.font = `bold ${idealFontSize}px Monospace`;
+      ctx.fillText(t.trim(), x, y);
+      if (i == tLines.length - 1) {
+        offset += 32;
+      } else {
+        offset += idealFontSize;
+      }
+    }
+    offset += 32;
+  }
   return canvas;
 }
