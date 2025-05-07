@@ -209,7 +209,7 @@ async function makeLabel(
     const maxTextWidth = labelWidth - labelHeight - margin;
     let textWidth = ctx.measureText(t.text.slice(0, chunkSize)).width;
     while (textWidth >= maxTextWidth) {
-      if (chunkSize <= 20) break; // minimum 20 char per line
+      if (chunkSize <= 5) break; // minimum 5 char per line
       chunkSize--;
       textWidth = ctx.measureText(t.text.slice(0, chunkSize)).width;
     }
