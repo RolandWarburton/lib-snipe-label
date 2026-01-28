@@ -81,9 +81,17 @@ async function getQRCodeData(
   return qrData.code;
 }
 
+export type CanvasCreator = (w: number, h: number) => HTMLCanvasElement;
+
 // makes a blank label
 function makeLabelCanvas(
   options: canvasOptions = { background: "#ffffff", width: 1050, height: 425 },
+  creator: CanvasCreator = (w, h) => {
+    const c = document.createElement("canvas");
+    c.width = w;
+    c.height = h;
+    return c;
+  },
 ):
   | {
     canvas: HTMLCanvasElement;
@@ -91,7 +99,7 @@ function makeLabelCanvas(
   }
   | Error {
   const { background, width, height } = options;
-  const canvas = document.createElement("canvas");
+  const canvas = creator(options.width, options.height);
   const ctx = canvas.getContext("2d");
   if (!ctx) {
     return new Error("failed to create canvas");
