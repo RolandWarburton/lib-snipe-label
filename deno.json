@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "tasks": {
     "build-examples": "deno run -A ./scripts/build-examples.ts",
-    "serve-examples": "deno run -A server.ts"
+    "serve-examples": "deno run -A server.ts",
+    "create-release": "deno run -A ./scripts/release.ts"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
