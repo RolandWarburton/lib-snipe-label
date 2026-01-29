@@ -35,4 +35,16 @@ export class CanvasRenderer {
     this.ctx.font = `${fontSize}px Monospace`;
     return this.ctx.measureText(text).width;
   }
+
+  // reset an existing canvas
+  clear() {
+    if (!this.canvas || !this.ctx) {
+      return;
+    }
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillStyle = "#ffffff";
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillStyle = "#000000";
+    this.ctx.textBaseline = "top";
+  }
 }
