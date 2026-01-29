@@ -1,6 +1,6 @@
-import { serveDir } from "jsr:@std/http@^1.0.14/file-server";
+import { serveDir } from "file-server";
 
-Deno.serve({ port: 3030 }, async (req) => {
+Deno.serve({ port: 3030 }, (req) => {
   return serveDir(req, {
     fsRoot: ".",
     showDirListing: true,
