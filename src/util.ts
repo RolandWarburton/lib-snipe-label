@@ -9,14 +9,13 @@ export function downloadCanvas(qrCanvas: HTMLCanvasElement, fileName: string) {
     const a = document.createElement("a");
     a.href = url;
     a.download = fileName;
+    a.style.display = "none";
 
     // Trigger download
-    document.body.appendChild(a);
     a.click();
 
     // Cleanup
     setTimeout(() => {
-      document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }, 100);
   }, "image/png");
