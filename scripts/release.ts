@@ -3,9 +3,9 @@
 // ------------------------------
 
 // --- Configuration ---
-const TAG = "v0.1.0";
-const RELEASE_NAME = "Version 0.1.0";
-const RELEASE_NOTES = "Refactor library";
+const TAG = "v0.1.1";
+const RELEASE_NAME = "Version 0.1.1";
+const RELEASE_NOTES = "Add ILabelConfig to module exports";
 // ---------------------
 
 async function runCommand(command: string, args: string[]): Promise<string> {
