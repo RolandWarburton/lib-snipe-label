@@ -2,13 +2,38 @@
 
 Library for interacting with generating special labels for snipeit.
 
+## API
+
+```ts
+import LabelGenerator, { createQRProvider, downloadCanvas } from "snipe-label";
+import type { ILabelConfig } from "snipe-label";
+
+const config: ILabelConfig = {
+  // px (1050×425 = 300dpi at 89×36mm)
+  width: 1050,
+  height: 425,
+  margin: 25,
+  fileName: "label.png",
+  fetchQRData: createQRProvider("d0a88aaefd18a43bae349ed01674bbd6"),
+  text: [
+    { text: "Asset Name", wrap: true, fontSize: 32 },
+    { text: "TAG-001", wrap: false },
+  ],
+};
+
+const canvas = await new LabelGenerator(config).makeLabel("TAG-001");
+if (canvas instanceof HTMLCanvasElement) {
+  downloadCanvas(canvas, "label.png");
+}
+```
+
 ## Development
 
 1. change deno import
 2. enable host.docker.internal
 3. run the server
 
-Run `deno -A ./server.ts` to serve the files to pickup in your docker container.
+Run `deno task serve-examples` to serve the files to pickup in your docker container.
 
 ```json
 // deno.json
