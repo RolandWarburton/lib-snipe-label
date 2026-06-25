@@ -19,6 +19,5 @@ export interface ILabelConfig {
   margin: number;
   fileName: string;
   text: IText[];
-  apiBaseURL: string;
-  fetchQRData: (baseURL: string, value: string) => Promise<string>;
+  fetchQRData: (value: string) => Promise<string>;
 }

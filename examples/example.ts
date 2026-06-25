@@ -1,6 +1,6 @@
 import LabelGenerator, {
+  createQRProvider,
   downloadCanvas,
-  fetchQRCodeData_mock,
 } from "../mod.ts";
 import type { ILabelConfig } from "../src/types/label.ts";
 
@@ -48,9 +48,8 @@ async function render() {
     backgroundColor: "#ffffff",
     margin: 25,
     fileName: "label.png",
-    apiBaseURL: "http://localhost:3030",
     text: textData,
-    fetchQRData: fetchQRCodeData_mock,
+    fetchQRData: createQRProvider("d0a88aaefd18a43bae349ed01674bbd6"),
   };
   const gen = new LabelGenerator(config);
 

@@ -10,7 +10,6 @@ export class LabelGenerator {
 
   public async makeLabel(qrValue: string): Promise<HTMLCanvasElement | Error> {
     const {
-      apiBaseURL,
       width,
       height,
       text,
@@ -20,7 +19,7 @@ export class LabelGenerator {
 
     try {
       // get the QR data to be encoded into the QR
-      const qrData = await fetchQRData(apiBaseURL, qrValue);
+      const qrData = await fetchQRData(qrValue);
       // create a new canvas
       const renderer = new CanvasRenderer(width, height);
       // calculate the width of the QR code
