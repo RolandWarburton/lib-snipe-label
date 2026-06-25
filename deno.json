@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "tasks": {
     "build-examples": "deno run -A ./scripts/build-examples.ts",
-    "serve-examples": "deno run -A server.ts",
+    "serve-examples": "deno run build-examples && deno run -A ./scripts/serve-examples.ts",
     "create-release": "deno run -A ./scripts/release.ts"
   },
   "imports": {
