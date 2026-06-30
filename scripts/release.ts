@@ -61,7 +61,14 @@ async function createRelease() {
 
 async function publishJSR() {
   console.log("\n--- Publishing to JSR ---");
-  await runCommand("deno", ["publish"]);
+  const cmd = new Deno.Command("deno", {
+    args: ["publish"],
+    stdin: "inherit",
+    stdout: "inherit",
+    stderr: "inherit",
+  });
+  const { code } = await cmd.output();
+  if (code !== 0) throw new Error("deno publish failed");
   console.log("\n🎉 Successfully published to JSR");
 }
 
