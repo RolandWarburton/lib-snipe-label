@@ -37,6 +37,11 @@ async function encode(plaintext: string, hexKey: string): Promise<string> {
   return btoa(String.fromCharCode(...combined));
 }
 
+/**
+ * Creates a `fetchQRData` provider that AES-CBC encrypts asset values before encoding them into the QR code.
+ * @param hexKey A 32-character hex string (16 bytes) used as the AES-CBC encryption key.
+ * @returns A provider function compatible with `ILabelConfig.fetchQRData`.
+ */
 export function createQRProvider(
   hexKey: string,
 ): (value: string) => Promise<string> {

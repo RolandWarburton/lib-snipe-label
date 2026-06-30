@@ -1,3 +1,8 @@
+/**
+ * Triggers a PNG download of the given canvas in the browser.
+ * @param qrCanvas The canvas element to download.
+ * @param fileName The filename for the downloaded file.
+ */
 export function downloadCanvas(qrCanvas: HTMLCanvasElement, fileName: string) {
   qrCanvas.toBlob((blob: Blob | null) => {
     if (!blob) {

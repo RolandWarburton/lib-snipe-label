@@ -2,12 +2,20 @@ import { CanvasRenderer } from "./render/canvas.ts";
 import { calculateLines } from "./logic/label.ts";
 import type { ILabelConfig } from "./types/label.ts";
 
+/** Generates asset label images on an HTML Canvas. */
 export class LabelGenerator {
   public config: ILabelConfig;
+
+  /** @param config Label dimensions, text blocks, and QR provider. */
   constructor(config: ILabelConfig) {
     this.config = config;
   }
 
+  /**
+   * Renders a label for the given asset value.
+   * @param qrValue The raw value passed to `fetchQRData` to produce the QR code content.
+   * @returns A canvas element containing the rendered label.
+   */
   public async makeLabel(qrValue: string): Promise<HTMLCanvasElement> {
     const {
       width,
