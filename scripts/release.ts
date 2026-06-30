@@ -3,9 +3,9 @@
 // ------------------------------
 
 // --- Configuration ---
-const TAG = "v0.1.1";
-const RELEASE_NAME = "Version 0.1.1";
-const RELEASE_NOTES = "Add ILabelConfig to module exports";
+const TAG = "v0.1.2";
+const RELEASE_NAME = "Version 0.1.2";
+const RELEASE_NOTES = "Publishing to JSR";
 // ---------------------
 
 async function runCommand(command: string, args: string[]): Promise<string> {
@@ -36,7 +36,6 @@ async function runCommand(command: string, args: string[]): Promise<string> {
 async function createRelease() {
   console.log("--- Starting GitHub Release Process ---");
 
-  // Define arguments for gh release command
   const releaseArgs = [
     "release",
     "create",
@@ -49,20 +48,22 @@ async function createRelease() {
   ];
 
   try {
-    // Attempt to create the new release
     await runCommand("gh", releaseArgs);
-    console.log(
-      `\n🎉 Successfully created release ${TAG}`,
-    );
+    console.log(`\n🎉 Successfully created release ${TAG}`);
   } catch (error) {
     if (error instanceof Error && error.message.includes("already exists")) {
-      console.warn(
-        `⚠️ Release tag ${TAG} already exists.`,
-      );
+      console.warn(`⚠️ Release tag ${TAG} already exists.`);
     } else {
       throw error;
     }
   }
 }
 
-createRelease();
+async function publishJSR() {
+  console.log("\n--- Publishing to JSR ---");
+  await runCommand("deno", ["publish"]);
+  console.log("\n🎉 Successfully published to JSR");
+}
+
+await createRelease();
+await publishJSR();
