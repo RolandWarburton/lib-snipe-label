@@ -1,5 +1,6 @@
 {
-  "name": "snipe-label",
+  "name": "@wirecrop/snipeit-label",
+  "license": "GPL-3.0",
   "version": "0.0.1",
   "tasks": {
     "build-examples": "deno run -A ./scripts/build-examples.ts",
