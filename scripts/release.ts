@@ -3,8 +3,8 @@
 // ------------------------------
 
 // --- Configuration ---
-const TAG = "v0.1.2";
-const RELEASE_NAME = "Version 0.1.2";
+const TAG = "v0.1.3";
+const RELEASE_NAME = "Version 0.1.3";
 const RELEASE_NOTES = "Publishing to JSR";
 // ---------------------
 
