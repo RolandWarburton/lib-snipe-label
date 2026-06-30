@@ -2,6 +2,7 @@
   "name": "@wirecrop/snipeit-label",
   "license": "GPL-3.0-only",
   "version": "0.1.2",
+  "description": "Browser library for generating encrypted asset labels for Snipe-IT.",
   "tasks": {
     "build-examples": "deno run -A ./scripts/build-examples.ts",
     "serve-examples": "deno run build-examples && deno run -A ./scripts/serve-examples.ts",
