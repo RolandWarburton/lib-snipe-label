@@ -1,9 +1,10 @@
-import { LabelGenerator } from "./src/label.ts";
-import { downloadCanvas } from "./src/util.ts";
-import { createQRProvider } from "./src/providers/crypto.ts";
-import type { ILabelConfig } from "./src/types/label.ts";
+/**
+ * @module
+ * Browser library for generating encrypted asset labels for Snipe-IT.
+ * Composes a QR code and text blocks onto an HTML Canvas.
+ */
 
-export default LabelGenerator;
-export { downloadCanvas };
-export type { ILabelConfig };
-export { createQRProvider };
+export { LabelGenerator as default, LabelGenerator } from "./src/label.ts";
+export { downloadCanvas } from "./src/util.ts";
+export { createQRProvider } from "./src/providers/crypto.ts";
+export type { ILabelConfig, IText } from "./src/types/label.ts";
