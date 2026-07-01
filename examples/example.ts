@@ -2,45 +2,25 @@ import LabelGenerator, {
   createQRProvider,
   downloadCanvas,
 } from "../mod.ts";
-import type { ILabelConfig } from "../src/types/label.ts";
+import type { ILabelConfig, IText } from "../src/types/label.ts";
 
 let activeCanvas: HTMLCanvasElement | null = null;
 
-// finds a HTML input by its ID, and parses the JSON from it
-// Returns the parsed array
-// deno-lint-ignore no-explicit-any
-function decodeDataFromInput(domID: string): any[] {
-  const node = document.getElementById(
-    domID,
-  ) as HTMLTextAreaElement;
+function decodeDataFromInput(domID: string): IText[] {
+  const node = document.getElementById(domID) as HTMLTextAreaElement;
   try {
-    return JSON.parse(node.value);
+    return JSON.parse(node.value) as IText[];
   } catch (err) {
     console.error("Failed to parse label JSON:", err);
     return [];
   }
 }
 
-// when called it will render a label to a DOM node #canvasContainer
 async function render() {
-  const btn = document.getElementById("generateBtn");
-  const dlBtn = document.getElementById("downloadBtn");
   const container = document.getElementById("canvasContainer");
+  if (!container) return;
 
-  if (!container || !btn || !dlBtn) {
-    let err = ""
-    err += "could not find either #generateBtn, #downloadBtn, or #canvasContainer"
-    err += "\nmake sure you are using HTML from the example provided"
-    return false;
-  }
-
-  // set the result container text to be a string
   container.innerHTML = "Generating...";
-
-  // get the label text and qr text from the input fields
-  const textData = decodeDataFromInput("labelText");
-  const qrVal =
-    (document.getElementById("qrValue") as HTMLInputElement).value || "";
 
   const config: ILabelConfig = {
     width: 1050,
@@ -48,37 +28,23 @@ async function render() {
     backgroundColor: "#ffffff",
     margin: 25,
     fileName: "label.png",
-    text: textData,
+    text: decodeDataFromInput("labelText"),
     fetchQRData: createQRProvider("d0a88aaefd18a43bae349ed01674bbd6"),
   };
-  const gen = new LabelGenerator(config);
+  const qrVal = (document.getElementById("qrValue") as HTMLInputElement).value || "";
 
   try {
-    // make a new canvas label
-    const canvas = await gen.makeLabel(qrVal);
-
-    // draw it on the container
+    const canvas = await new LabelGenerator(config).makeLabel(qrVal);
     container.innerHTML = "";
-    if (canvas instanceof HTMLCanvasElement) {
-      container.appendChild(canvas);
-      // store a reference to the canvas for downloading
-      activeCanvas = canvas;
-    } else {
-      container.innerText = "Error: " + canvas.message;
-    }
+    container.appendChild(canvas);
+    activeCanvas = canvas;
   } catch (e: unknown) {
-    if (e instanceof Error) {
-      container.innerText = "Error: " + e.message;
-    } else {
-      container.innerText = "Error";
-    }
+    container.innerText = "Error" + (e instanceof Error ? ": " + e.message : "");
   }
 }
 
-// wire up render button
 document.getElementById("generateBtn")?.addEventListener("click", render);
 
-// wire up download button
 document.getElementById("downloadBtn")?.addEventListener("click", () => {
   if (activeCanvas) {
     downloadCanvas(activeCanvas, "snipe-label.png");
