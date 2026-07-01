@@ -8,13 +8,23 @@
         body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
         .controls { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .input-group { margin-bottom: 10px; }
-        canvas { border: 1px solid #ccc; background: white; max-width: 100%; height: auto; }
+        canvas { border: 1px solid #ccc; background: white; max-width: 100%; }
         label { display: block; font-weight: bold; margin-bottom: 5px; }
     </style>
 </head>
 <body>
     <h2>Snipe Label Tester</h2>
     <div class="controls">
+        <div class="input-group">
+            <label>Label Size</label>
+            <select id="labelSize" style="width: 100%">
+                <option value="1050x425">89 × 36 mm (1050 × 425 px)</option>
+                <option value="1051x331">89 × 28 mm (1051 × 331 px)</option>
+                <option value="1193x638">101 × 54 mm (1193 × 638 px)</option>
+                <option value="732x343">62 × 29 mm (732 × 343 px)</option>
+                <option value="638x295">54 × 25 mm (638 × 295 px)</option>
+            </select>
+        </div>
         <div class="input-group">
             <label>QR Value</label>
             <input type="text" id="qrValue" value="ASSET-123456" style="width: 100%">

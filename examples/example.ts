@@ -22,9 +22,12 @@ async function render() {
 
   container.innerHTML = "Generating...";
 
+  const sizeSelect = document.getElementById("labelSize") as HTMLSelectElement;
+  const [width, height] = sizeSelect.value.split("x").map(Number);
+
   const config: ILabelConfig = {
-    width: 1050,
-    height: 425,
+    width,
+    height,
     backgroundColor: "#ffffff",
     margin: 25,
     fileName: "label.png",
@@ -36,6 +39,11 @@ async function render() {
   try {
     const canvas = await new LabelGenerator(config).makeLabel(qrVal);
     container.innerHTML = "";
+    // Display at a fixed fraction of the real (300 DPI) pixel size so
+    // different label sizes preview at their true relative dimensions.
+    const previewScale = 0.7;
+    canvas.style.width = `${width * previewScale}px`;
+    canvas.style.height = `${height * previewScale}px`;
     container.appendChild(canvas);
     activeCanvas = canvas;
   } catch (e: unknown) {
@@ -44,6 +52,7 @@ async function render() {
 }
 
 document.getElementById("generateBtn")?.addEventListener("click", render);
+document.getElementById("labelSize")?.addEventListener("change", render);
 
 document.getElementById("downloadBtn")?.addEventListener("click", () => {
   if (activeCanvas) {

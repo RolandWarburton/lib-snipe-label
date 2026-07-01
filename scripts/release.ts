@@ -3,9 +3,9 @@
 // ------------------------------
 
 // --- Configuration ---
-const TAG = "v0.1.3";
-const RELEASE_NAME = "Version 0.1.3";
-const RELEASE_NOTES = "Improve JSR score";
+const TAG = "v0.1.4";
+const RELEASE_NAME = "Version 0.1.4";
+const RELEASE_NOTES = "Refactor examples code & allow user selectable label size";
 // ---------------------
 
 async function runCommand(command: string, args: string[]): Promise<string> {
