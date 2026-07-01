@@ -11,11 +11,8 @@ deno task serve-examples
 # Build the example app into static files
 deno task build-examples
 
-# Create a GitHub release (edit TAG/RELEASE_NAME/RELEASE_NOTES in scripts/release.ts first)
+# Tag the current commit with the deno.json version and push it (triggers the release workflow)
 deno task create-release
-
-# Publish to JSR
-deno publish
 ```
 
 ## Architecture
@@ -63,6 +60,8 @@ extra_hosts:
 
 ## Releasing
 
-1. Edit `TAG`, `RELEASE_NAME`, and `RELEASE_NOTES` at the top of `scripts/release.ts`.
-2. Run `deno task create-release` — it calls `gh release create` via the GitHub CLI.
-3. Bump `version` in `deno.json` and run `deno publish` to publish the new version to JSR.
+Releases are automated by `.github/workflows/release.yml`, which runs on any pushed `v*` tag: it verifies the tag matches `deno.json`, creates the GitHub release, and publishes to JSR via OIDC (no token needed — the JSR package must be linked to the GitHub repo).
+
+1. Bump `version` in `deno.json` and commit.
+2. Push the commit: `git push origin master`.
+3. Run `deno task create-release` — it tags the commit `v<version>` and pushes the tag, which triggers the workflow.
