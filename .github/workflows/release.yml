@@ -1,0 +1,40 @@
+name: Release
+
+# Trigger on pushing a version tag, e.g. `git tag v0.1.5 && git push origin v0.1.5`
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the GitHub release
+      id-token: write # OIDC auth for `deno publish` to JSR (no token needed)
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      # Fail early if the tag doesn't match the version in deno.json
+      - name: Verify tag matches deno.json version
+        run: |
+          VERSION="$(deno eval 'console.log(JSON.parse(Deno.readTextFileSync("deno.json")).version)')"
+          if [ "v$VERSION" != "${GITHUB_REF_NAME}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match deno.json version v$VERSION" >&2
+            exit 1
+          fi
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Version ${{ github.ref_name }}"
+          generate_release_notes: true
+          make_latest: true
+
+      - name: Publish to JSR
+        run: deno publish
