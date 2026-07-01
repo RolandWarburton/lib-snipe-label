@@ -16,9 +16,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
+      - name: Install Deno
+        run: |
+          curl -fsSL https://deno.land/install.sh | sh -s v2.7.14
+          echo "$HOME/.deno/bin" >> "$GITHUB_PATH"
 
       # Fail early if the tag doesn't match the version in deno.json
       - name: Verify tag matches deno.json version
@@ -29,12 +30,18 @@ jobs:
             exit 1
           fi
 
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: "Version ${{ github.ref_name }}"
-          generate_release_notes: true
-          make_latest: true
+      # Catch packaging errors before anything is published externally
+      - name: Preflight JSR publish
+        run: deno publish --dry-run
 
       - name: Publish to JSR
         run: deno publish
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "Version ${GITHUB_REF_NAME}" \
+            --generate-notes \
+            --latest
