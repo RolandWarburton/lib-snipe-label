@@ -1,5 +1,7 @@
 # Lib Snipe Label
 
+[![JSR](https://jsr.io/badges/@wirecrop/snipeit-label)](https://jsr.io/@wirecrop/snipeit-label)
+
 Library for generating special encrypted labels for snipeit.
 
 ## API
